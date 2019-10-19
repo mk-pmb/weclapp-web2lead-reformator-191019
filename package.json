@@ -1,0 +1,21 @@
+{ "name": "weclapp-web2lead-reformator-191019",
+  "version": "0.0.1",
+  "description": "Make weclapp web2lead forms a bit more useable.",
+  "keywords": [],
+
+  "author": "M.K. (https://github.com/mk-pmb)",
+  "homepage": "https://github.com/mk-pmb/weclapp-web2lead-reformator-191019/#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mk-pmb/weclapp-web2lead-reformator-191019.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mk-pmb/weclapp-web2lead-reformator-191019/issues"
+  },
+  "contributors": [],
+
+  "private": false, "license": "ISC",
+
+
+  "npm vs. BOM = Unexpected token": "-*- coding: UTF-8 -*-"
+}

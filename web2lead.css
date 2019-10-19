@@ -1,0 +1,59 @@
+﻿@charset "UTF-8";
+/* -*- coding: UTF-8, tab-width: 2 -*- */
+
+html body .fill {
+  position: absolute;
+  display: block;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  bottom: 0px;
+  margin: 0px;
+}
+
+body { background-color: whitesmoke; }
+
+input[type="reset"] {
+  border-color: firebrick;
+  background-color: red;
+  color: white;
+}
+
+form.mgr fieldset { float: left; }
+form.mgr { margin-bottom: 3em; }
+form textarea { overflow: scroll; resize: both; }
+.unfloat { clear: both; }
+
+.ff { margin-bottom: 0.5em; }
+.ff > label:after { content: ":"; }
+.ff > label {
+  display: block; float: left;
+  width: 15em;
+  overflow: auto;
+  margin-right: 1em;
+  text-align: right;
+  padding-top: 4px;
+}
+
+.ff-reply { display: block; float: left; }
+
+.ff-reply textarea,
+.ff-reply select,
+.ff-select,
+.ff-reply input[type="text"] { font: inherit; min-width: 40em; }
+
+.ff-select {
+  display: block;
+  overflow: scroll;
+  overflow-x: auto;
+  resize: vertical;
+  border: 1px solid grey;
+  padding: 0.5em;
+  padding-bottom: 1em;
+  background-color: white;
+}
+.ff-select:not([style]) { max-height: 10em; }
+.ff-select label { display: block; }
+
+input[type="text"]:focus,
+.ff-select label:hover { background-color: #DEF; }

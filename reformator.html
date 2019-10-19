@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>web2lead</title>
+  <meta http-equiv="Content-Script-Type" content="text/javascript">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <link rel="stylesheet" type="text/css" href="web2lead.css">
+</head><body>
+
+<!-- ##cut## -->
+
+<h1 id="loading-wait-plz" style="
+  margin-top: 5em;
+  margin-bottom: 100em;
+  ">Wird geladen…</h1>
+
+<form name="mgr" class="mgr" action="nope://" method="get">
+  <fieldset><legend>Originales HTML:
+    <input type="reset" value="leeren">
+    <input type="button" name="refine" value="umbauen">
+    </legend>
+    <textarea name="orig_html" rows="5" cols="40" wrap="off"></textarea>
+  </fieldset>
+    <fieldset><legend>Neues HTML:
+    <input type="button" name="save_html" value="download"><a></a>
+    </legend>
+    <textarea name="nice_html" rows="5" cols="40" wrap="off"></textarea>
+  </fieldset>
+  <div class="unfloat"></div>
+</form>
+
+<section id="preview">
+  <script src="mgr.js"></script>
+  <div style="margin-top: 9001em;"></div>
+</section>
+
+<!-- ##cut## -->
+
+</body></html>
