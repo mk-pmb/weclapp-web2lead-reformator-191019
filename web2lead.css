@@ -24,7 +24,7 @@ form.mgr { margin-bottom: 3em; }
 form textarea { overflow: scroll; resize: both; }
 .unfloat { clear: both; }
 
-.ff { margin-bottom: 0.5em; }
+.ff { margin-bottom: 0.5em; max-width: 60em; }
 .ff > label:after { content: ":"; }
 .ff > label {
   display: block; float: left;
@@ -35,19 +35,29 @@ form textarea { overflow: scroll; resize: both; }
   padding-top: 4px;
 }
 
-.ff-reply { display: block; float: left; }
+.ff-reply {
+  display: block; float: left; position: relative;
+  overflow: auto;
+}
 
 .ff-reply textarea,
 .ff-reply select,
 .ff-select,
-.ff-reply input[type="text"] { font: inherit; min-width: 40em; }
+.ff-reply input[type="date"],
+.ff-reply input[type="text"] {
+  font: inherit;
+  width: 40em;
+  max-width: 100%;
+  border: 1px solid grey;
+  box-sizing: border-box;
+}
+.ff-reply input[type="date"] { width: 15ex; }
 
 .ff-select {
   display: block;
   overflow: scroll;
   overflow-x: auto;
   resize: vertical;
-  border: 1px solid grey;
   padding: 0.5em;
   padding-bottom: 1em;
   background-color: white;
