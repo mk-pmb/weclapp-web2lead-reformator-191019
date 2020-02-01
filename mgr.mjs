@@ -2,71 +2,77 @@
 (function setup() {
   const win = window; // eslint-disable-line no-undef
   const doc = win.document;
+  let refineCfg = false;
 
-  function ifDef(x, u) { return (x === undefined ? u : x); }
+  // function ifDef(x, u) { return (x === undefined ? u : x); }
   function unixtime() { return Math.floor(Date.now() / 1e3); }
+  function sumOptTextLen(sum, opt) { return sum + opt.text.length; }
+  function orf(x) { return (x || false); }
+  // function ores(x) { return (x || ''); }
+  function finOr(x, d) { return (Number.isFinite(x) ? x : d); }
 
-  function parseAttr(tag) {
-    const attr = {};
-    function save(m, k, v) {
-      if (attr[k] !== undefined) { return m; }
-      attr[k] = ifDef(v, true);
-      return '';
+
+  function parseSimplifiedJson(text) {
+    const json = (('{\n' + String(text || '') + '\n}')
+      .replace(/\r/g, '')
+      .replace(/\n\s*\/{2}[ -\uFFFF]*/g, '')
+      .replace(/(\n\s*)(\w+):/g, '$1"$2":')
+      .replace(/(\w|"|\]|\})\n/g, '$1,\n')
+      .replace(/,(\s*[\}\]])/g, '$1')
+      );
+    try {
+      return JSON.parse(json);
+    } catch (parseErr) {
+      parseErr.message += ' <pre>' + json + '</pre>';
+      throw parseErr;
     }
-    const unparsed = tag.replace(/^<\w+(?=\s+)/, '')
-      .replace(/\s+$/, '').replace(/\s*>$/, '')
-      .replace(/\s+(\w+)(?:="([\w\-]+)"|)/g, save);
-    if (unparsed) {
-      const e = ('Unparsed attributes:\n[[' + unparsed
-        + ']]\nin\n[[' + tag + ']]');
-      throw new Error(e);
-      // return { ERROR: e };
-    }
-    return attr;
   }
 
 
-  function fixSelects(selHtml) {
-    const optVals = selHtml.replace(/\s*<\/(option|select)>\s*/g, ''
-    ).split(/<option/);
-    const selOpt = parseAttr(optVals.shift());
-    const allowMulti = selOpt.multiple;
-    if (!allowMulti) {
-      const sz = Math.min(Math.max(optVals.length + 1, 3), 10);
-      return selHtml.replace(/>/, ' size=' + sz + '>');
-    }
-    function renderOpt(opt, idx) {
-      const m = fixSelects.optRgx.exec(opt);
-      if (!m) {
-        const e = ('Unsupported option syntax for ' + selOpt.name + ': ' + opt);
-        throw new Error(e);
-      }
-      let first = '';
+  function fixOneSelect(selBox) {
+    const origVals = Array.from(selBox.options);
+    const selDiv = doc.createElement('div');
+    const allowMulti = selBox.multiple;
+    const elemType = (allowMulti ? 'checkbox' : 'radio');
+    const selCls = [
+      (allowMulti ? 'multi' : 'one'),
+      fixOneSelect.decideBoxed(origVals),
+    ];
+
+    origVals.forEach(function renderOpt(opt, idx) {
+      selDiv.innerHTML += '\n    <label><input></input> <span></span></label>';
+      const lbl = selDiv.lastChild;
+      lbl.lastChild.innerHTML = opt.innerHTML;
+      const inp = lbl.firstChild;
+      inp.type = elemType;
+      inp.name = selBox.name;
+      inp.value = opt.value;
       if (!idx) {
-        if (selOpt.id) { first += ' id="' + selOpt.id + '"'; }
-        if (!allowMulti) { first += ' checked'; }
+        if (selBox.id) { inp.id = selBox.id; }
+        if (!allowMulti) { inp.checked = true; }
       }
-      const h = ('    <label><input'
-        + ' type="' + (allowMulti ? 'checkbox' : 'radio') + '"'
-        + ' name="' + selOpt.name + '"'
-        + ' value="' + ifDef(m[1], m[2]).replace(/"/g, '&quot;') + '"'
-        + first + '> ' + m[2] + '</label>');
-      return h;
-    }
-    return [
-      ('<div class="ff-select ff-select-' + (allowMulti ? 'multi' : 'one')
-        + '">'),
-      ...optVals.map(renderOpt),
-      '  <div class="unfloat"></div>',
-      '  </div>',
-    ].join('\n');
+    });
+
+    selDiv.className = ('% ' + selCls.join(' %-')).replace(/%/g, 'ff-select');
+    selDiv.innerHTML += '\n    <div class="unfloat"></div>\n';
+    selBox.parentNode.insertBefore(selDiv, selBox);
+    selBox.parentNode.removeChild(selBox);
   }
-  fixSelects.selRgx = /<select [^<>]+>(?:[^<]|<\/?option\b)+<\/select>/g;
-  fixSelects.optRgx = /^\s*(?:value="([^<>&"]+)"|)>([^<>]+)$/;
+  fixOneSelect.decideBoxed = function decideBoxed(optVals) {
+    const dfMaxItems = 5;
+    const dfMaxLenSum = 80;
+    const cfg = orf(orf(refineCfg.selects).shortList);
+    if (optVals.length > finOr(cfg.maxItems, dfMaxItems)) { return 'boxed'; }
+    const lenSum = optVals.reduce(sumOptTextLen, 0);
+    if (lenSum > finOr(cfg.maxTextLenSum, dfMaxLenSum)) { return 'boxed'; }
+    return 'short';
+  };
 
 
   function refineCore(orig) {
-    const formHTML = (orig
+    // First, reghaxx it into something somewhat usable:
+    const tmpDom = doc.createElement('div');
+    tmpDom.innerHTML = (orig
       .replace(/\r/g, '')
       .replace(/°/g, '&deg;')
       .replace(/(<form )/, '$1target="_blank" ')
@@ -82,10 +88,14 @@
       .replace(/<br\s*\/?>/g, ('</div>'
         + '\n  <div class="unfloat"></div>'
         + '\n</div>'))
-      .replace(fixSelects.selRgx, fixSelects)
     );
+
+    // Then, let's refine it on DOM level:
+    function tmpQsa(sel) { return Array.from(tmpDom.querySelectorAll(sel)); }
+    tmpQsa('select').forEach(fixOneSelect);
+
     const tmpl = doc.selfHtml.split(/<!-- ##cut## -->/);
-    const pageHTML = tmpl[0] + formHTML + tmpl[2];
+    const pageHTML = tmpl[0] + tmpDom.innerHTML + tmpl[2];
     return pageHTML;
   }
 
@@ -95,9 +105,11 @@
     const mgElem = doc.forms.mgr.elements;
     let html;
     try {
+      refineCfg = parseSimplifiedJson(mgElem.config.value);
       html = refineCore(mgElem.orig_html.value);
     } catch (err) {
       html = String(err);
+      console.error(err);
     }
     mgElem.nice_html.value = html;
     const dest = doc.getElementById('preview');
@@ -131,19 +143,35 @@
   }
 
 
+  function addTextAreaClearer(formElems, fieldName) {
+    const field = formElems[fieldName];
+    function clearTextArea() {
+      field.value = '';
+      field.focus();
+    };
+    const elem = formElems['clear_' + fieldName];
+    elem.onclick = clearTextArea;
+  }
+
+
   async function init() {
     const mgForm = doc.forms.mgr;
     const mgElem = mgForm.elements;
     mgForm.onreset = () => mgElem.orig_html.focus();
     doc.selfHtml = await download('?download-self', 'self-downoad failed');
-    mgElem.orig_html.value = await download('origform.utf8.html', '');
+    const cacheBuster = '?refresh=' + unixtime();
+    mgElem.orig_html.value = await download('origform.html' + cacheBuster, '');
+    mgElem.config.value = await download('config.txt' + cacheBuster, '');
     mgElem.refine.onclick = tryRefine;
     mgElem.save_html.onclick = saveHtml;
+    addTextAreaClearer(mgElem, 'orig_html');
+    addTextAreaClearer(mgElem, 'config');
     tryRefine();
 
     const waitLoad = doc.getElementById('loading-wait-plz');
     waitLoad.parentNode.removeChild(waitLoad);
   }
+
 
   init();
 }());

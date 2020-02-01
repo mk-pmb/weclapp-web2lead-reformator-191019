@@ -1,0 +1,14 @@
+// -*- coding: utf-8, tab-width: 2 -*-
+
+pageTitle: "Kontaktformular — Katzenclub"
+check: {
+  country: "DE"
+  lead_topic: "Interessent"
+  }
+hide: {
+  lead_topic: true
+  "*": [
+    "Bitte auswählen..."
+    "-"
+    ]
+  }

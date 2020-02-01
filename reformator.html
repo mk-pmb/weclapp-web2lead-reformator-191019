@@ -16,12 +16,17 @@
 
 <form name="mgr" class="mgr" action="nope://" method="get">
   <fieldset><legend>Originales HTML:
-    <input type="reset" value="leeren">
+    <input type="button" name="clear_orig_html" value="leeren" class="delete">
     <input type="button" name="refine" value="umbauen">
     </legend>
     <textarea name="orig_html" rows="5" cols="40" wrap="off"></textarea>
   </fieldset>
-    <fieldset><legend>Neues HTML:
+  <fieldset><legend>Konfiguration:
+    <input type="button" name="clear_config" value="leeren" class="delete">
+    </legend>
+    <textarea name="config" rows="5" cols="40" wrap="off"></textarea>
+  </fieldset>
+  <fieldset><legend>Neues HTML:
     <input type="button" name="save_html" value="download"><a></a>
     </legend>
     <textarea name="nice_html" rows="5" cols="40" wrap="off"></textarea>

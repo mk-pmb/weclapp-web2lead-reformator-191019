@@ -51,10 +51,10 @@ form textarea { overflow: scroll; resize: both; }
   border: 1px solid grey;
   box-sizing: border-box;
 }
+.ff-select-short { border-width: 0; }
 .ff-reply input[type="date"] { width: 15ex; }
 
-.ff-select {
-  display: block;
+.ff-select-boxed {
   overflow: scroll;
   overflow-x: auto;
   resize: vertical;
@@ -62,8 +62,37 @@ form textarea { overflow: scroll; resize: both; }
   padding-bottom: 1em;
   background-color: white;
 }
-.ff-select:not([style]) { max-height: 10em; }
+.ff-select-boxed:not([style]) { max-height: 10em; }
 .ff-select label { display: block; }
+.ff-select-short label {
+  display: inline-block;
+  padding-right: 0.2em;
+  margin-right: 2em;
+}
+.ff-select-short label:last-of-type { margin-right: 0; }
 
 input[type="text"]:focus,
 .ff-select label:hover { background-color: #DEF; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*scroll*/
